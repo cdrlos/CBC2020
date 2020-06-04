@@ -41,15 +41,15 @@ Atomic vectors are: "logical", "integer", "numeric" (synonym "double"), "complex
 Here is a list:
 
 ```{r}
-a_list <- list(nums = c(8, 9), 
-            log = TRUE,    
+a_list <- list(nums = c(8, 9),
+            log = TRUE,
             cha = c("a", "b", "c"))
 ```
 
 Here are two subsetting commands. Do they return the same values? Run the code chunk above, _and then_ run the code chunks below to confirm
 
 ```{r}
-a_list["nums"] 
+a_list["nums"]
 ```
 
 ```{r}
@@ -92,7 +92,7 @@ map(exams, mean)
 Calculate the variance (`var()`) of each student’s exam grades.
 
 ```{r}
-exams 
+exams
 ```
 
 ## Your Turn 6
@@ -107,13 +107,12 @@ exams
 
 Write a function that counts the best exam twice and then takes the average. Use it to grade all of the students.
 
-1. Write code that solves the problem for a real object  
-2. Wrap the code in `function(){}` to save it  
-3. Add the name of the real object as the function argument 
+1. Write code that solves the problem for a real object
+2. Wrap the code in `function(){}` to save it
+3. Add the name of the real object as the function argument
 
 ```{r}
 vec <- exams[[1]]
-
 
 ```
 
@@ -134,10 +133,10 @@ Lists are a useful way to organize data, but you need to arrange manually for fu
 
 You can do this with the `map()` family of functions in the purrr package.
 
-To write a function, 
+To write a function,
 
-1. Write code that solves the problem for a real object  
-2. Wrap the code in `function(){}` to save it  
-3. Add the name of the real object as the function argument 
+1. Write code that solves the problem for a real object
+2. Wrap the code in `function(){}` to save it
+3. Add the name of the real object as the function argument
 
-This sequence will help prevent bugs in your code (and reduce the time you spend correcting bugs). 
+This sequence will help prevent bugs in your code (and reduce the time you spend correcting bugs).

@@ -1,8 +1,13 @@
+
 ---
 title: "Tidy Data"
+author: 
+- name: Carlos Salinas
+- name: Alyssa Whittemore
+- name: Yuxuan Li
 output: html_notebook
 editor_options: 
-  chunk_output_type: inline
+chunk_output_type: inline
 ---
 
 <!-- This file by Charlotte Wickham is licensed under a Creative Commons Attribution 4.0 International License, adapted from the orignal work at https://github.com/rstudio/master-the-tidyverse by RStudio. -->
@@ -75,7 +80,7 @@ It makes it very hard to manipulate.
 Is `bp_systolic` tidy?
 
 ```{r}
-bp_systolic2 
+bp_systolic
 ```
 
 ## Your Turn 2
@@ -86,7 +91,7 @@ Using `bp_systolic2` with `group_by()`, and `summarise()`:
 * Find the last time each subject was measured
 
 ```{r}
-bp_systolic2
+bp_systolic2 %>% group_by(subject_id) %>% summarize(avg_sys = mean(systolic))
 ```
 
 ## Your Turn 3
@@ -98,7 +103,7 @@ On a sheet of paper, draw how the cases data set would look if it had the same v
 Use `gather()` to reorganize `table4a` into three columns: **country**, **year**, and **cases**.
 
 ```{r}
-table4a 
+table4a %>% gather(key = "year", value = "n", 2:3)
 ```
 
 ## Your Turn 5
@@ -110,7 +115,7 @@ On a sheet of paper, draw how this data set would look if it had the same values
 Use `spread()` to reorganize `table2` into four columns: **country**, **year**, **cases**, and **population**.
 
 ```{r}
-table2 
+table2  %>% spread(key = type, value = count)
 ```
 
 ***

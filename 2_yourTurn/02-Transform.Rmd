@@ -1,7 +1,7 @@
 ---
 title: "Transform Data"
 output: html_notebook
-editor_options: 
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -26,6 +26,8 @@ skim_with(integer = list(p25 = NULL, p75=NULL))
 ## Your Turn 1
 Run the skim_with() command, and then try skimming babynames again to see how the output is different
 ```{r}
+skim_with()
+skim(babynames)
 
 ```
 
@@ -40,7 +42,8 @@ select(babynames, name, prop)
 Alter the code to select just the `n` column:
 
 ```{r}
-select(babynames, name, prop)
+select(babynames, starts_with("n"))
+select(babynames, ends_with("n"))
 ```
 
 
@@ -65,9 +68,9 @@ filter(babynames, name == "Amelia")
 
 Show:
 
-* All of the names where prop is greater than or equal to 0.08  
-* All of the children named "Sea"  
-* All of the names that have a missing value for `n`  
+* All of the names where prop is greater than or equal to 0.08
+* All of the children named "Sea"
+* All of the names that have a missing value for `n`
 
 ```{r}
 filter(babynames, prop >= 0.08)
@@ -80,12 +83,13 @@ filter(babynames, is.na(n))
 
 Use Boolean operators to alter the code below to return only the rows that contain:
 
-* Girls named Sea  
-* Names that were used by exactly 5 or 6 children in 1880  
+* Girls named Sea
+* Names that were used by exactly 5 or 6 children in 1880
 * Names that are one of Acura, Lexus, or Yugo
 
 ```{r}
-filter(babynames, name == "Sea" | name == "Anemone")
+filter(babynames, (sex == 'F' & name == "Sea"))
+filter(babynames, year == 1880 & (n == 5 | n == 6))
 ```
 
 ## Arrange
@@ -99,7 +103,7 @@ arrange(babynames, n)
 Arrange babynames by `n`. Add `prop` as a second (tie breaking) variable to arrange on. Can you tell what the smallest value of `n` is?
 
 ```{r}
-
+arrange(babynames, n, prop)
 ```
 
 ## desc
@@ -128,40 +132,51 @@ babynames %>%
 
 ## Your Turn 7
 
-Use `%>%` to write a sequence of functions that: 
+Use `%>%` to write a sequence of functions that:
 
-1. Filter babynames to just the girls that were born in 2015  
-2. Select the `name` and `n` columns  
+1. Filter babynames to just the girls that were born in 2015
+2. Select the `name` and `n` columns
 3. Arrange the results so that the most popular names are near the top.
 
 ```{r}
 View(babynames)
-babynames %>% 
-  select(name, year, n) %>% 
+babynames %>%
+  select(name, year, n) %>%
   arrange(desc(n))
-babynames %>% 
+babynames %>%
   filter(name == "Uma", sex == "F") %>%
   select(year, prop) %>%
   ggplot() +
     geom_line(mapping = aes(year, prop))
 ```
 
+```{r}
+babynames %>%
+    filter(year==2015, sex == "F") %>%
+    select(name, n) %>%
+    arrange(desc(n))
+```
+
 ## Your Turn 8
 
-1. Trim `babynames` to just the rows that contain your `name` and your `sex`  
-2. Trim the result to just the columns that will appear in your graph (not strictly necessary, but useful practice)  
+1. Trim `babynames` to just the rows that contain your `name` and your `sex`
+2. Trim the result to just the columns that will appear in your graph (not strictly necessary, but useful practice)
 3. Plot the results as a line graph with `year` on the x axis and `prop` on the y axis
 
 ```{r}
-
+babynames %>%
+    filter(name=="Carina", sex=="F") %>%
+    select(year,prop) %>%
+    ggplot() +
+    geom_line(mapping = aes(year, prop))
 ```
 
 ## Your Turn 9
 
 Use summarise() to compute three statistics about the data:
 
-1. The first (minimum) year in the dataset  
-2. The last (maximum) year in the dataset  
+1. The first (minimum) year in the dataset
+2. The last (maximum) year in the dataset
 3. The total number of children represented in the data
 
 ```{r}
@@ -176,10 +191,9 @@ Extract the rows where `name == "Khaleesi"`. Then use `summarise()` and a summar
 2. The first year Khaleesi appeared in the data
 
 ```{r}
-babynames %>% filter(name == "Khaleesi") 
-
-%>% 
-  summarize(total = sum(n), firstyear = min(year))
+babynames %>%
+    filter(name=="Khaleesi") %>%
+    summarize(total=sum(n), firstyear=min(year))
 ```
 
 ## Toy data for transforming
@@ -187,7 +201,7 @@ babynames %>% filter(name == "Khaleesi")
 ```{r}
 # Toy dataset to use
 pollution <- tribble(
-       ~city,   ~size, ~amount, 
+       ~city,   ~size, ~amount,
   "New York", "large",      23,
   "New York", "small",      14,
     "London", "large",      22,
@@ -200,12 +214,12 @@ pollution <- tribble(
 ## Summarize
 
 ```{r}
-pollution %>% 
+pollution %>%
  summarise(mean = mean(amount), sum = sum(amount), n = n())
 ```
 
 ```{r}
-pollution %>% 
+pollution %>%
   group_by(city) %>%
   summarise(mean = mean(amount), sum = sum(amount), n = n())
 ```
@@ -216,8 +230,12 @@ pollution %>%
 Use `group_by()`, `summarise()`, and `arrange()` to display the ten most popular baby names. Compute popularity as the total number of children of a single gender given a name.
 
 ```{r}
-babynames %>% group_by(sex,name) %>% summarise( total = sum(n)) %>% arrange(desc(total)) %>% ungroup() %>% slice(1:20)
-  
+babynames %>%
+    group_by(name, sex) %>%
+    summarize(total = sum(n)) %>%
+    arrange(desc(total)) %>%
+    ungroup() %>%
+    slice(1:20)
 ```
 
 ## Your Turn 12
@@ -225,15 +243,19 @@ babynames %>% group_by(sex,name) %>% summarise( total = sum(n)) %>% arrange(desc
 Use grouping to calculate and then plot the number of children born each year over time.
 
 ```{r}
-
+babynames %>%
+    group_by(year,sex) %>%
+    summarize(total=sum(n)) %>%
+    ungroup() %>%
+    ggplot() + geom_line(mapping = aes(year, total))
 ```
 
 ## Ungroup
 
 ```{r}
 babynames %>%
-  group_by(name, sex) %>% 
-  summarise(total = sum(n)) %>% 
+  group_by(name, sex) %>%
+  summarise(total = sum(n)) %>%
   arrange(desc(total))
 ```
 
@@ -249,16 +271,17 @@ babynames %>%
 Use `min_rank()` and `mutate()` to rank each row in `babynames` from largest `n` to lowest `n`.
 
 ```{r}
-
+babynames %>%
+    mutate(rank=min_rank(desc(prop)))
 ```
 
 ## Your Turn 14
 
-Compute each name's rank _within its year and sex_. 
+Compute each name's rank _within its year and sex_.
 Then compute the median rank _for each combination of name and sex_, and arrange the results from highest median rank to lowest.
 
 ```{r}
-
+babynames2 <- (babynames %>% mutate (percent = round(prop*100),2))
 ```
 
 ## Flights data
@@ -274,14 +297,16 @@ band <- tribble(
    ~name,     ~band,
   "Mick",  "Stones",
   "John", "Beatles",
-  "Paul", "Beatles"
+  "Paul", "Beatles",
+  "Paul", "Stones"
 )
 
 instrument <- tribble(
     ~name,   ~plays,
    "John", "guitar",
    "Paul",   "bass",
-  "Keith", "guitar"
+   "Keith", "guitar",
+   "Paul", "trombone"
 )
 
 instrument2 <- tribble(
@@ -308,10 +333,10 @@ Which airlines had the largest arrival delays? Complete the code below.
 ```{r}
 flights %>%
   drop_na(arr_delay) %>%
-                      %>%
-  group_by(         ) %>%
-                      %>%
-  arrange(       ) 
+    left_join(airlines, by="carrier") %>%
+  group_by(name) %>%
+      summarize(delay = mean(arr_delay))%>%
+    arrange(delay)
 ```
 
 ## Different names
@@ -326,9 +351,9 @@ How many airports in `airports` are serviced by flights originating in New York 
 
 
 ```{r}
-__________ %>%
- _________(_________, by = ___________) %>%
-  distinct(faa)
+airports %>%
+ semi_join(flights, by = c("faa" = "dest")) %>%
+    distinct(faa)
 ```
 
 
@@ -337,15 +362,15 @@ __________ %>%
 
 # Take aways
 
-* Extract variables with `select()`  
-* Extract cases with `filter()`  
-* Arrange cases, with `arrange()`  
+* Extract variables with `select()`
+* Extract cases with `filter()`
+* Arrange cases, with `arrange()`
 
-* Make tables of summaries with `summarise()`  
-* Make new variables, with `mutate()`  
+* Make tables of summaries with `summarise()`
+* Make new variables, with `mutate()`
 * Do groupwise operations with `group_by()`
 
-* Connect operations with `%>%`  
+* Connect operations with `%>%`
 
 * Use `left_join()`, `right_join()`, `full_join()`, or `inner_join()` to join datasets
 * Use `semi_join()` or `anti_join()` to filter datasets against each other
@@ -373,7 +398,7 @@ band %>% inner_join(instrument, by = "name")
 ```
 
 ## Your turn
-Which airlines had the largest arrival delays? Work in groups to complete the code below. 
+Which airlines had the largest arrival delays? Work in groups to complete the code below.
 
 ```{r}
 flights %>%
@@ -381,7 +406,7 @@ flights %>%
      #something!     %>%
   group_by(   #something!  ) %>%
      #something!      %>%
-  arrange(  #something! )       
+  arrange(  #something! )
 ```
 
 ## Your turn
@@ -400,18 +425,15 @@ airports %>% left_join(flights, by = c("faa" = "dest"))
 
 # Take aways
 
-* Extract variables with `select()`  
-* Extract cases with `filter()`  
-* Arrange cases, with `arrange()`  
+* Extract variables with `select()`
+* Extract cases with `filter()`
+* Arrange cases, with `arrange()`
 
-* Make tables of summaries with `summarise()`  
-* Make new variables, with `mutate()`  
+* Make tables of summaries with `summarise()`
+* Make new variables, with `mutate()`
 * Do groupwise operations with `group_by()`
 
-* Connect operations with `%>%`  
+* Connect operations with `%>%`
 
 * Use `left_join()`, `right_join()`, `full_join()`, or `inner_join()` to join datasets
 * Use `semi_join()` or `anti_join()` to filter datasets against each other
-
-
-

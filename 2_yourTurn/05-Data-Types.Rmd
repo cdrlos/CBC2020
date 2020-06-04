@@ -25,9 +25,10 @@ Finally, create a summary table that shows:
 2. What proportion of flights were delayed
 
 ```{r}
-
+nrow(flights %>%
+     mutate(delayed = arr_delay > 0) %>%
+     filter(!is.na(delayed)))/nrow(flights)
 ```
-
 
 ## Your Turn 2
 
@@ -39,12 +40,12 @@ In your group, fill in the blanks to:
 
 ```{r}
 babynames %>%
-  _______(last = _________, 
-          vowel = __________) %>%
-  group_by(__________) %>%
-  _________(p_vowel = weighted.mean(vowel, n)) %>%
-  _________ +
-  __________
+  mutate(last = str_sub(name, -1),
+          vowel = last %in% c('a', 'e', 'i', 'o', 'u')) %>%
+  group_by(year,sex) %>%
+  summarize(p_vowel = weighted.mean(vowel, n)) %>%
+  ggplot(aes(x = year, y = p_vowel, color = sex)) +
+  geom_line()
 ```
 
 ## Your Turn 3
@@ -53,20 +54,23 @@ Repeat the previous exercise, some of whose code is below, to make a sensible gr
 
 ```{r}
 gss_cat %>%
-  drop_na(________) %>%
-  group_by(________) %>%
-  summarise(_________________) %>%
-  ggplot() +
-    geom_point(mapping = aes(x = _______, y = _________________________))
+    drop_na(tvhours) %>%
+    group_by(marital) %>%
+    summarize(tvhours = mean(tvhours)) %>%
+    ggplot(aes(x = tvhours, y = fct_reorder(marital, tvhours))) +
+    geom_point()
 ```
 
-## Your Turn 4
+## marital Turn 4
 
 Do you think liberals or conservatives watch more TV?
 Compute average tv hours by party ID an then plot the results.
 
 ```{r}
-
+gss_cat %>%
+    drop_na(tvhours) %>%
+    group_by(partyid) %>%
+    summarize(tvhours = mean(tvhours))
 ```
 
 ## Your Turn 5
@@ -76,7 +80,8 @@ What is the best time of day to fly?
 Use the `hour` and `minute` variables in `flights` to compute the time of day for each flight as an hms. Then use a smooth line to plot the relationship between time of day and `arr_delay`.
 
 ```{r}
-
+mod <- lm(price ~ carat + cut + color + clarity, data = diamonds)
+View(mod)
 ```
 
 ## Your Turn 6
