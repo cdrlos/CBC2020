@@ -131,3 +131,11 @@ A data set is tidy if and only if:
 3. Every value is in its own cell (which follows from the above)
 
 What is a variable and an observation may depend on your immediate goal.
+
+```{r}
+filter(flights, (arr_delay > 120) &
+                (dest == "IAH" | dest == "HOU") &
+                (carrier %in% c("United", "American", "Delta")) &
+                (month %in% c(7, 8, 9)) &
+                (dep_time - sched_dep_time < 0))
+```

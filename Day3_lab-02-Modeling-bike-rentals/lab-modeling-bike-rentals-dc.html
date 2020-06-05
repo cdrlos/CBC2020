@@ -647,15 +647,34 @@ summary(lm2_bike_share)</code></pre>
 <li>Fit a model predicting total daily bike rentals from season, year, whether the day is holiday or not, whether the day is a workingday or not, the weather category, temperature, feeling temperature, humidity, and windspeed, as well as the interaction between feeling temperature and holiday. Record adjusted <span class="math inline">\(R^2\)</span> of the model.</li>
 </ol>
 <pre class="r"><code>lm3_bike_share &lt;- lm(cnt ~ season + yr + holiday + workingday +
-                     weathersit + raw_temp + raw_atemp + raw_hum +
+                     weathersit + raw_atemp + raw_hum +
                      raw_windspeed + raw_atemp*holiday,
-                     bike_share_data)</code></pre>
+                     bike_share_data)
+lm3_coeffs &lt;- tidy(lm3_bike_share)</code></pre>
 <ol start="12" style="list-style-type: decimal">
-<li><p>Write the linear models for holidays and non-holidays. Is the slope of temperature the same or different for these two models? How about the slope for feeling temperature? Why or why not?</p></li>
-<li><p>Interpret the slopes of season and feeling temperature. If the slopes are different for holidays and non-holidays, make sure to interpret both. If the variable has multiple levels, make sure you interpret all of the slope coefficients associated with it.</p></li>
-<li><p>Interpret the intercept. If the intercept is different for holidays and non-holidays, make sure to interpret both.</p></li>
-<li><p>According to this model, assuming everything else is the same, in which season does the model predict total daily bike rentals to be highest and which to be the lowest?</p></li>
-<li><p>Perform the first step of backward selection by fitting a series of models, each with one explanatory variable removed from the model you fit in the previous exercise. Record adjusted <span class="math inline">\(R^2\)</span>s of each of these models. Which model of these models, if any, gives the highest improvement over the model in the previous exercise?</p></li>
+<li>Write the linear models for holidays and non-holidays. Is the slope of temperature the same or different for these two models? How about the slope for feeling temperature? Why or why not?</li>
+</ol>
+<pre class="r"><code>sprintf(&quot;%s + %s*x + %s*x*z + %s*z&quot;,
+        tidy(lm3_bike_share)$estimate[1],
+        tidy(lm3_bike_share)$estimate[10],
+        tidy(lm3_bike_share)$estimate[13],
+        tidy(lm3_bike_share)$estimate[6])</code></pre>
+<pre><code>## [1] &quot;2629.68465071387 + 108.706439365572*x + 35.1614449779091*x*z + -1375.61884151343*z&quot;</code></pre>
+<p>where x = the raw feeling temperature and z = holiday (taking the values 0 for no or 1 for yes).</p>
+<ol start="13" style="list-style-type: decimal">
+<li>Interpret the slopes of season and feeling temperature. If the slopes are different for holidays and non-holidays, make sure to interpret both. If the variable has multiple levels, make sure you interpret all of the slope coefficients associated with it.</li>
+</ol>
+<p>Compared to the spring season, the number of bike rented during the winter season 1458.936772, in the summer 2433.911071, and 3004.6677376 in the fall. All the other variables held constant, a unit change in the raw feeling temperature increases the number of bike rentals by 108.7064394.</p>
+<ol start="14" style="list-style-type: decimal">
+<li>Interpret the intercept. If the intercept is different for holidays and non-holidays, make sure to interpret both.</li>
+</ol>
+<p>When there are holidays the estimate (i.e. the intercept) of bike rentals is 1254.0658092, which is less than on non-holiday days which can possibly be due to people staying at home during holidays.</p>
+<ol start="15" style="list-style-type: decimal">
+<li>According to this model, assuming everything else is the same, in which season does the model predict total daily bike rentals to be highest and which to be the lowest?</li>
+</ol>
+<p>According to this model, fall will have the highest estimated number of rentals with an estimate of 3004.6677376 and the lowest in winter with an estimate of 1458.936772.</p>
+<ol start="16" style="list-style-type: decimal">
+<li>Perform the first step of backward selection by fitting a series of models, each with one explanatory variable removed from the model you fit in the previous exercise. Record adjusted <span class="math inline">\(R^2\)</span>s of each of these models. Which model of these models, if any, gives the highest improvement over the model in the previous exercise?</li>
 </ol>
 </div>
 </div>

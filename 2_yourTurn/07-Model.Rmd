@@ -79,7 +79,7 @@ mod_ehs %>%
 ```
 
 ```{r}
-wages %>%
+count_per_ed_level <- wages %>%
     group_by(education,sex) %>%
     tally() 
 ```

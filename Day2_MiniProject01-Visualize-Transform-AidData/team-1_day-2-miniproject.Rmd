@@ -1,7 +1,7 @@
 ---
 title: US foreign aid since 1980
 author: Samal Abdikerimova, Ravi Donepudi, Carlos Salinas, and Xiran Yu
-date: June 3, 2020
+date: "`r format(Sys.time(), '/%d/%m/%Y/')`"
 ---
 
 ```{r setup, include = FALSE} 
@@ -60,4 +60,10 @@ df_usa %>%
     geom_line() +
     labs(title="Top 10 recipients of US aid",
          y="Total aid from the US in USD")
+```
+
+Why are we donating so much to Kuwait and Saudi Arabia in the 90s? Let's find out. 
+
+```{r}
+
 ```

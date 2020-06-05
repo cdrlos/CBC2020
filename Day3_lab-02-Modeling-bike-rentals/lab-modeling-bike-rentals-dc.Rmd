@@ -210,9 +210,10 @@ of the model.
 
 ```{r}
 lm3_bike_share <- lm(cnt ~ season + yr + holiday + workingday +
-                     weathersit + raw_temp + raw_atemp + raw_hum +
+                     weathersit + raw_atemp + raw_hum +
                      raw_windspeed + raw_atemp*holiday,
                      bike_share_data)
+lm3_coeffs <- tidy(lm3_bike_share)
 ```
 
 12. Write the linear models for holidays and non-holidays. Is the slope of
@@ -220,29 +221,37 @@ temperature the same or different for these two models? How about the slope
 for feeling temperature? Why or why not?
 
 ```{r}
-lm_temp_hol <- lm(cnt ~ season + raw_temp + raw_atemp,
-                  filter(bike_share_data), holiday == "yes")
-lm_temp_n_hol <- lm(cnt ~ season + raw_temp + raw_atemp,
-                    filter(bike_share_data), holiday == "no")
-
-tidy(lm_temp_hol)
-tidy(lm_temp_n_hol)
+sprintf("%s + %s*x + %s*x*z + %s*z",
+        tidy(lm3_bike_share)$estimate[1],
+        tidy(lm3_bike_share)$estimate[10],
+        tidy(lm3_bike_share)$estimate[13],
+        tidy(lm3_bike_share)$estimate[6])
 ```
+where x = the raw feeling temperature and z = holiday (taking the values 0 for no or 1 for yes).
 
 13. Interpret the slopes of season and feeling temperature. If the slopes are
 different for holidays and non-holidays, make sure to interpret both. If the
-variable has multiple levels, make sure you interpret all of the slope coefficients
-associated with it.
+variable has multiple levels, make sure you interpret all of the slope coefficients associated with it.
+
+Compared to the spring season, the number of bike rented during the winter season `r lm3_coeffs$estimate[1]+lm3_coeffs$estimate[2]`, in the summer `r lm3_coeffs$estimate[1]+lm3_coeffs$estimate[3]`, and  `r lm3_coeffs$estimate[1]+lm3_coeffs$estimate[4]` in the fall. All the other variables held constant, a unit change in the raw feeling temperature increases the number of bike rentals by `r lm3_coeffs$estimate[10]`.
 
 14. Interpret the intercept. If the intercept is different for holidays and
 non-holidays, make sure to interpret both.
 
+When there are holidays the estimate (i.e. the intercept) of bike rentals is `r lm3_coeffs$estimate[1]+lm3_coeffs$estimate[6]`, which is less than on non-holiday days which can possibly be due to people staying at home during holidays.
+
 15. According to this model, assuming everything else is the same, in which
 season does the model predict total daily bike rentals to be highest and
 which to be the lowest?
+
+According to this model, fall will have the highest estimated number of rentals with an estimate of `r lm3_coeffs$estimate[1]+lm3_coeffs$estimate[4]` and the lowest in winter with an estimate of `r lm3_coeffs$estimate[1]+lm3_coeffs$estimate[2]`.
 
 16. Perform the first step of backward selection by fitting a series of models,
 each with one explanatory variable removed from the model you fit in the previous
 exercise. Record adjusted $R^2$s of each of these models. Which model of these
 models, if any, gives the highest improvement over the model in the previous
 exercise?
+
+```{r}
+
+```

@@ -1,7 +1,7 @@
 ---
 title: "Organize with List Columns"
 output: html_notebook
-editor_options: 
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -21,13 +21,14 @@ us <- gapminder %>%
 ## Your turn 1
 
 How has life expectancy changed over time?
-Make a line plot of lifeExp vs. year grouped by country.  
+Make a line plot of lifeExp vs. year grouped by country.
 Set alpha to 0.2, to see the results better.
 
 ```{r}
-gapminder
-
-
+gapminder %>%
+    ggplot(mapping = aes(x = year, y = lifeExp)) +
+    geom_line(alpha = 0.2) +
+    facet_wrap(~ country)
 ```
 
 ## Consider
@@ -49,19 +50,19 @@ gapminder_nested <- gapminder %>%
 
 fit_model <- function(df) lm(lifeExp ~ year, data = df)
 
-gapminder_nested <- gapminder_nested %>% 
+gapminder_nested <- gapminder_nested %>%
   mutate(model = map(data, fit_model))
 
 get_rsq <- function(mod) glance(mod)$r.squared
 
-gapminder_nested <- gapminder_nested %>% 
+gapminder_nested <- gapminder_nested %>%
   mutate(r.squared = map_dbl(model, get_rsq))
 ```
 
-Then filter `gapminder_nested` to find the countries with r.squared less than 0.5.  
+Then filter `gapminder_nested` to find the countries with r.squared less than 0.5.
 
 ```{r}
-
+filter(gapminder_nested, r.squared < 0.5)
 ```
 
 ## Your Turn 3
@@ -74,16 +75,16 @@ get_slope <- function(mod) {
 }
 
 # Add new column with r-sqaured
-gapminder_nested <- gapminder_nested %>% 
-  mutate(r.squared = map_dbl(model, get_rsq))
+gapminder_nested <- gapminder_nested %>%
+  mutate(r.squared = map(model, get_rsq))
 
 # filter out low r-squared countries
-poor_fit <- gapminder_nested %>% 
+poor_fit <- gapminder_nested %>%
   filter(r.squared < 0.5)
 
 # unnest and plot result
 unnest(poor_fit, data) %>%
-  ggplot(aes(x = year, y = lifeExp)) + 
+  ggplot(aes(x = year, y = lifeExp)) +
     geom_line(aes(color = country))
 ```
 
@@ -99,4 +100,3 @@ unnest(poor_fit, data) %>%
 ```
 
 # Take away
-
