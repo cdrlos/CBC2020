@@ -252,6 +252,5 @@ exercise. Record adjusted $R^2$s of each of these models. Which model of these
 models, if any, gives the highest improvement over the model in the previous
 exercise?
 
-```{r}
 
-```
+*Minor change*
